@@ -9,7 +9,7 @@ const nextConfig = {
   },
   pageExtensions: ['js', 'jsx'],
   experimental: {
-    scrollRestoration: true,
+    scrollRestoration: false,
   },
 }
 
