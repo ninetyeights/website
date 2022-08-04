@@ -2,7 +2,13 @@
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    domains: ['addons.mozilla.org', 'lh3.googleusercontent.com', 'store-images.s-microsoft.com', 'upload.wikimedia.org', 'is4-ssl.mzstatic.com'],
+    domains: [
+      'addons.mozilla.org',
+      'lh3.googleusercontent.com',
+      'store-images.s-microsoft.com',
+      'upload.wikimedia.org',
+      'is4-ssl.mzstatic.com',
+    ],
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -10,10 +16,9 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx'],
   experimental: {
     scrollRestoration: false,
-  },
-  images: {
-    loader: 'imgix',
-    path: '',
+    images: {
+      unoptimized: true,
+    },
   },
 }
 

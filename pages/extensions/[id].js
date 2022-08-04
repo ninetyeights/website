@@ -1,10 +1,7 @@
-import {useRouter} from 'next/router';
-import Link from "next/link";
 import Header from '../../components/Header';
-import { getExtensionDetail, getAllExtensionIds } from '../../lib/getExtensions';
+import { getExtensionDetail } from '../../lib/getExtensions';
 
 export default function ExtensionDetail(data) {
-    const router = useRouter();
 
     return (
         <div id="page__extension__detail">
@@ -29,8 +26,8 @@ export default function ExtensionDetail(data) {
     )
 }
 
-export async function getStaticPaths() {
-    const {data} = await getAllExtensionIds()
+//export async function getStaticPaths() {
+//    const {data} = await getAllExtensionIds()
     // const res = await fetch('http://localhost:3000/api/extensions', {
     //     method: 'POST',
     //     headers: {
@@ -40,17 +37,17 @@ export async function getStaticPaths() {
     // });
     // const {data} = await res.json()
 
-    const paths = data.map(item => {
-        return {params: {id: item._id}}
-    })
+//    const paths = data.map(item => {
+//        return {params: {id: item._id}}
+//    })
 
-    return {
-        paths,
-        fallback: false
-    }
-}
+//    return {
+//        paths,
+//        fallback: false
+//    }
+//}
 
-export async function getStaticProps({params}) {
+export async function getServerSideProps({params}) {
     // const res = await fetch('http://localhost:3000/api/extensions/detail', {
     //     method: 'POST',
     //     headers: {
