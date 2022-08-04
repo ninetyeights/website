@@ -1,5 +1,9 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+/.idea
+/.vscode
+/package-lock.json
+
 # dependencies
 /node_modules
 /.pnp
@@ -30,3 +34,10 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# app
+pages/api/extensions/add.js
+pages/extensions/add.js
+models/websiteModel.js
+pages/tools/extract-links.js
+models/websiteModel.js
