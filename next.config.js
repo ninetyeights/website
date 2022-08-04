@@ -11,6 +11,10 @@ const nextConfig = {
   experimental: {
     scrollRestoration: false,
   },
+  images: {
+    loader: 'imgix',
+    path: '',
+  },
 }
 
 module.exports = nextConfig
