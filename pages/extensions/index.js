@@ -7,7 +7,7 @@ import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
 import { getExtensionsHome } from '../../lib/getExtensions'
 import Header from '../../components/Header'
 import Card from '../../components/extensions/Card'
-import {CATEGORIES} from '../../constants/static'
+import {BROWSER_CATEGORIES} from '../../constants/static'
 
 // const categories = {
 //   all: '全部',
@@ -88,7 +88,7 @@ function BeforeExtensions({ items }) {
                   image={item.image}
                   url={item.url}
                   browser={item.browser}
-                  category={CATEGORIES[item.category]}
+                  category={BROWSER_CATEGORIES[item.category]}
                 />
               ))}
           </div>
@@ -129,7 +129,7 @@ export default function Extensions({ data }) {
                       image={item.image}
                       url={item.url}
                       browser={item.browser}
-                      category={CATEGORIES[item.category]}
+                      category={BROWSER_CATEGORIES[item.category]}
                       hideChecked={true}
                     />
                   ))}

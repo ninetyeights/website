@@ -273,9 +273,9 @@ export default function Extensions({ items }) {
           </div>
         </aside>
       </div>
-      {selected().length ? <div className="extension__popup shadow rounded-md bg-300/50 backdrop-blur-sm h-12 container px-64 z-30 fixed bottom-2 flex items-center justify-between">
+      {selected().length ? <div className="extension__popup shadow rounded-md bg-300/30 backdrop-blur-sm h-12 container px-64 z-30 fixed bottom-2 flex items-center justify-between">
         <h4>已选择: {selected().length}</h4>
-        <button className="hover:bg-300/70 px-3 py-1.5 rounded active:bg-300" onClick={() => onOpenSelected()}>打开</button>
+        <button className="hover:bg-300/70 px-3 py-1.5 rounded active:bg-300/90" onClick={() => onOpenSelected()}>打开所选插件</button>
       </div> : ''}
     </div>
   )
@@ -318,7 +318,7 @@ export const getServerSideProps = async ({ params }) => {
 //       },
 //     },
 //   ]
-// 
+//
 //   return {
 //     paths,
 //     fallback: false,

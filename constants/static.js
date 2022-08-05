@@ -1,4 +1,4 @@
-const CATEGORIES = {
+const BROWSER_CATEGORIES = {
   all: '全部',
   blogging: '博客',
   shopping: '购物',
@@ -18,6 +18,16 @@ const CATEGORIES = {
   other: '其他',
 }
 
+const SOFTWARE_CATEGORIES = {
+  all: '全部',
+  cut: '剪辑',
+  test: '测试'
+}
+
+const PLATFORM = ['Win', 'Mac(Intel)', 'Mac(M1)', 'Linux', 'Android', 'iOS']
+
 export {
-  CATEGORIES
+  BROWSER_CATEGORIES,
+  SOFTWARE_CATEGORIES,
+  PLATFORM
 }

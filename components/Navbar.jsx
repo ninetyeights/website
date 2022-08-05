@@ -64,7 +64,12 @@ export default function Navbar() {
         </Link>
         <div className="flex items-center md:order-2">
           {/* 如果登录用户显示, Dark 模式下还需要细节处理下hover和active颜色 */}
-          <button onClick={() => router.push('/extensions/add')} className="mr-4 bg-color-primary-reverse/80 hover:bg-color-primary-reverse/70 active:bg-color-primary-reverse/90 text-white py-1 px-2 rounded">添加插件</button>
+          {router.asPath.includes('softwares') && (
+            <button onClick={() => router.push('/softwares/add')} className="mr-4 bg-color-primary-reverse/80 hover:bg-color-primary-reverse/70 active:bg-color-primary-reverse/90 text-white py-1 px-2 rounded">添加软件</button>
+          )}
+          {router.asPath.includes('extensions') && (
+            <button onClick={() => router.push('/extensions/add')} className="mr-4 bg-color-primary-reverse/80 hover:bg-color-primary-reverse/70 active:bg-color-primary-reverse/90 text-white py-1 px-2 rounded">添加插件</button>
+          )}
           <button
             data-collapse-toggle="mobile-menu-2"
             type="button"
