@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { SoftwareCard } from '../../components/extensions/Card'
 import Header from '../../components/Header'
-import getSoftwares from '../../lib/getSoftwares'
+// import getSoftwares from '../../lib/getSoftwares'
 import { SOFTWARE_CATEGORIES, PLATFORM } from '../../constants/static'
 
 const browserIcons = {
@@ -23,7 +23,8 @@ const browserIcons = {
     'https://upload.wikimedia.org/wikipedia/commons/5/52/Safari_browser_logo.svg',
 }
 
-export default function Extensions({ items }) {
+export default function Software({ items }) {
+  console.log(items)
   const { query, asPath, replace } = useRouter()
 
   const [data, setData] = useState(() => {
@@ -182,13 +183,13 @@ export default function Extensions({ items }) {
               .filter((item) => item.recommend)
               .map((item) => (
                 <SoftwareCard
-                  id={item._id}
-                  key={item._id}
+                  id={item.id}
+                  key={item.id}
                   name={item.name}
                   image={item.image}
                   url={item.url}
                   browser={item.browser}
-                  category={SOFTWARE_CATEGORIES[item.category]}
+                  category={item.category}
                   changeSelect={changeSelect}
                   checked={item.checked}
                 />
@@ -237,13 +238,13 @@ export default function Extensions({ items }) {
               )
               .map((item) => (
                 <SoftwareCard
-                  id={item._id}
-                  key={item._id}
+                  id={item.id}
+                  key={item.id}
                   name={item.name}
                   image={item.image}
                   url={item.url}
                   browser={item.browser}
-                  category={SOFTWARE_CATEGORIES[item.category]}
+                  category={item.category}
                   changeSelect={changeSelect}
                   checked={item.checked}
                 />
@@ -283,11 +284,13 @@ export default function Extensions({ items }) {
 }
 
 export const getServerSideProps = async () => {
-  const { data } = await getSoftwares()
+  // const { data } = await getSoftwares()
+  const response = await fetch('https://ne-backend.ninetyeights.com/api/software/')
+  const res = await response.json()
 
   return {
     props: {
-      items: data,
+      items: res,
     },
   }
 }

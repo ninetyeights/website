@@ -38,6 +38,8 @@ yarn-error.log*
 # app
 pages/api/extensions/add.js
 pages/extensions/add.js
+pages/api/software/add.js
+pages/software/add.js
 models/websiteModel.js
 pages/tools/extract-links.js
 models/websiteModel.js
