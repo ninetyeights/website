@@ -8,23 +8,18 @@ import {
   faMagnifyingGlass,
   faFilter,
 } from '@fortawesome/free-solid-svg-icons'
-import { SoftwareCard } from '../../components/extensions/Card'
-import Header from '../../components/Header'
-// import getSoftwares from '../../lib/getSoftwares'
-import { SOFTWARE_CATEGORIES, PLATFORM } from '../../constants/static'
+import {faApple, faWindows} from '@fortawesome/free-brands-svg-icons'
+import { SoftwareCard } from '../../../components/extensions/Card'
+import Header from '../../../components/Header'
+import { PLATFORM } from '../../../constants/static'
 
-const browserIcons = {
-  chrome:
-    'https://upload.wikimedia.org/wikipedia/commons/e/e1/Google_Chrome_icon_(February_2022).svg',
-  firefox:
-    'https://upload.wikimedia.org/wikipedia/commons/a/a0/Firefox_logo,_2019.svg',
-  edge: 'https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_(2019).svg',
-  safari:
-    'https://upload.wikimedia.org/wikipedia/commons/5/52/Safari_browser_logo.svg',
+const platformIcons = {
+  win: <FontAwesomeIcon className="h-7 w-7" icon={faWindows}/>,
+  'mac-intel': <FontAwesomeIcon className="h-7 w-7" icon={faApple}/>,
+  'mac-apple': <FontAwesomeIcon className="h-7 w-7" icon={faApple}/>
 }
 
-export default function Software({ items }) {
-  console.log(items)
+export default function SoftwarePlatform({ items, categories }) {
   const { query, asPath, replace } = useRouter()
 
   const [data, setData] = useState(() => {
@@ -34,7 +29,7 @@ export default function Software({ items }) {
   const [selectedAll, setSelectedAll] = useState(false)
   const [categoriesName, setCategoriesName] = useState({})
   const [currentCategory, setCurrentCategory] = useState('all')
-  const [selectedPlatform, setSelectedPlatform] = useState('Win')
+  // const [selectedPlatform, setSelectedPlatform] = useState('Win')
 
   const isFirstLoaded = useRef(true)
   const isFirstLoaded1 = useRef(true)
@@ -74,15 +69,15 @@ export default function Software({ items }) {
   }, [data])
 
   const updateCategory = () => {
-    let _categories = items
-      .filter((item) => !item.recommend)
-      .map((item) => item.category)
-    _categories = new Set(_categories)
+    // let _categories = items
+    //   .filter((item) => !item.recommend)
+    //   .map((item) => item.category)
+    // _categories = new Set(_categories)
     let obj = {
       all: '全部',
     }
-    Array.from(_categories).map((key) => {
-      obj[key] = SOFTWARE_CATEGORIES[key]
+    Object.keys(categories).map((key) => {
+      obj[key] = categories[key]
     })
     if (JSON.stringify(obj) !== JSON.stringify(categoriesName)) {
       setCategoriesName(obj)
@@ -114,7 +109,7 @@ export default function Software({ items }) {
   const changeSelect = (id) => {
     setData((prevState) =>
       prevState.map((item) => {
-        if (item._id === id) {
+        if (item.id === id) {
           return { ...item, checked: !item.checked }
         }
         return item
@@ -129,15 +124,11 @@ export default function Software({ items }) {
 
   const onOpenSelected = () => {
     selected().map((item) => {
-      const matched = item.urls.filter(
-        (item) => item.platform === selectedPlatform
-      )
-      if (matched.length) {
-        const { downloadUrl } = matched[0]
-        if (downloadUrl.trim() !== '' && !pop(downloadUrl)) {
-          alert('请允许浏览器打开多窗口')
-        }
+      const res = item.urls.find((item) => item.platform === query.slug)
+      if (res.url !== '' && !pop(res.url)) {
+        alert('请允许浏览器打开多窗口')
       }
+      // }
       // if (downloadUrl.trim() !== '' && !pop(item.url)) {
       //   alert('请允许浏览器打开多窗口')
       // }
@@ -155,8 +146,9 @@ export default function Software({ items }) {
       <div className="extension__list flex space-x-4">
         <main className="flex-1">
           <Header>
-            {/* <Image height={28} width={28} src={browserIcons[query.slug]} /> */}
-            <span className="ml-2">软件列表</span>
+            {/* <Image height={28} width={28} src={platformIcons[query.slug]} /> */}
+            {platformIcons[query.slug]}
+            <span className="ml-2">{PLATFORM[query.slug]}</span>
           </Header>
           <div className="mb-4 relative flex items-center justify-center space-x-4">
             <span className="text-xl absolute left-0">推荐</span>
@@ -189,7 +181,7 @@ export default function Software({ items }) {
                   image={item.image}
                   url={item.url}
                   browser={item.browser}
-                  category={item.category}
+                  category={item.category.name}
                   changeSelect={changeSelect}
                   checked={item.checked}
                 />
@@ -231,7 +223,7 @@ export default function Software({ items }) {
               .filter((item) =>
                 currentCategory === 'all'
                   ? item
-                  : item.category === currentCategory
+                  : item.category.slug === currentCategory
               )
               .filter((item) =>
                 item.name.toLowerCase().includes(keyword.toLowerCase().trim())
@@ -244,7 +236,7 @@ export default function Software({ items }) {
                   image={item.image}
                   url={item.url}
                   browser={item.browser}
-                  category={item.category}
+                  category={item.category.name}
                   changeSelect={changeSelect}
                   checked={item.checked}
                 />
@@ -258,7 +250,7 @@ export default function Software({ items }) {
       {selected().length ? (
         <div className="extension__popup shadow rounded-md bg-300/30 backdrop-blur-sm h-12 container px-64 z-30 fixed bottom-2 flex items-center justify-between">
           <h4>已选择: {selected().length}</h4>
-          <select
+          {/* <select
             value={selectedPlatform}
             onChange={onChangePlatform}
             className="outline-none ml-1 p-0.5 border rounded dark:bg-gray-800"
@@ -268,13 +260,19 @@ export default function Software({ items }) {
                 {value}
               </option>
             ))}
-          </select>
-          <button
-            className="hover:bg-300/70 px-3 py-1.5 rounded active:bg-300/90"
-            onClick={() => onOpenSelected()}
-          >
-            下载所选软件
-          </button>
+          </select> */}
+          <div>
+            <button
+              className="hover:bg-300/70 px-3 py-1.5 rounded active:bg-300/90 mr-4"
+              onClick={() => setData(prevState => (prevState.map(item => ({...item, checked: false}))))}
+            >取消选择</button>
+            <button
+              className="hover:bg-300/70 px-3 py-1.5 rounded active:bg-300/90"
+              onClick={() => onOpenSelected()}
+            >
+              下载所选软件
+            </button>
+          </div>
         </div>
       ) : (
         ''
@@ -283,14 +281,19 @@ export default function Software({ items }) {
   )
 }
 
-export const getServerSideProps = async () => {
-  // const { data } = await getSoftwares()
-  const response = await fetch('https://ne-backend.ninetyeights.com/api/software/')
-  const res = await response.json()
+export const getServerSideProps = async ({ params }) => {
+  // const response = await fetch(
+  //   `http://127.0.0.1:8000/api/software/${params.slug}/`
+  // )
+  const response = await fetch(
+    `https://ne-backend.ninetyeights.com/api/software/${params.slug}/`
+  )
+  const { data, categories } = await response.json()
 
   return {
     props: {
-      items: res,
+      items: data,
+      categories
     },
   }
 }

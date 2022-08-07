@@ -9,26 +9,6 @@ import Header from '../../components/Header'
 import Card from '../../components/extensions/Card'
 import {BROWSER_CATEGORIES} from '../../constants/static'
 
-// const categories = {
-//   all: '全部',
-//   blogs: '博客',
-//   shopping: '购物',
-//   dev: '开发者工具',
-//   sc: '社交与通讯',
-//   prod: '生产工具',
-//   search: '搜索工具',
-//   pe: '体育',
-//   nw: '新闻与天气',
-//   entertainment: '娱乐',
-//   photos: '照片',
-//   accessibility: '辅助功能',
-//   bookmarks: '书签',
-//   tabs: '标签页',
-//   themes: '主题',
-//   ps: '隐私和安全',
-//   other: '其他',
-// }
-
 function BeforeExtensions({ items }) {
   const router = useRouter()
   const [data, setData] = useState(() => {

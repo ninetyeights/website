@@ -118,12 +118,12 @@ export default function Navbar() {
             </li>
             <li
               className={`${
-                router.pathname.includes('/softwares')
+                router.pathname.includes('/software')
                   ? 'text-color-primary bg-color-primary/30 dark:bg-color-primary/10 '
                   : ''
               }rounded active:bg-color-active/40 dark:active:bg-color-active/5 hover:bg-gray-300/30 dark:hover:bg-gray-300/10`}
             >
-              <Link href="/softwares">
+              <Link href="/software">
                 <a className="flex items-center justify-center py-1 px-2">
                   软件列表
                 </a>

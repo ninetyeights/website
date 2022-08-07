@@ -24,7 +24,11 @@ const SOFTWARE_CATEGORIES = {
   test: '测试'
 }
 
-const PLATFORM = ['Win', 'Mac(Intel)', 'Mac(M1)', 'Linux', 'Android', 'iOS']
+const PLATFORM = {
+  win: 'Windows',
+  'mac-intel': 'macOS (Intel)',
+  'mac-apple': 'macOS (Apple Silicon)',
+}
 
 export {
   BROWSER_CATEGORIES,
