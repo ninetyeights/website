@@ -176,12 +176,12 @@ function FacebookSearch({theme}) {
             update(index, {...fields[index], clicked: true})
         }
 
-        // if (filterName === 'top' || idText.trim() === '' || encoded === undefined) {
-        //     window.open(`https://www.facebook.com/search/${filterName}?q=${keyword}`, '_blank')
-        // } else {
-        //     encoded = encodeURIComponent(encoded);
-        //     window.open(`https://www.facebook.com/search/${filterName}?q=${keyword}&filters=${encoded}`, '_blank')
-        // }
+        if (filterName === 'top' || idText.trim() === '' || encoded === undefined) {
+            window.open(`https://www.facebook.com/search/${filterName}?q=${keyword}`, '_blank')
+        } else {
+            encoded = encodeURIComponent(encoded);
+            window.open(`https://www.facebook.com/search/${filterName}?q=${keyword}&filters=${encoded}`, '_blank')
+        }
     }
 
     return (<div className='facebook-precise-search'>

@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Fragment } from 'react'
 import Router, { useRouter } from 'next/router'
 import Link from 'next/link'
+import Head from 'next/head'
 import Image from 'next/image'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -8,15 +9,16 @@ import {
   faMagnifyingGlass,
   faFilter,
 } from '@fortawesome/free-solid-svg-icons'
-import {faApple, faWindows} from '@fortawesome/free-brands-svg-icons'
+import { faApple, faWindows } from '@fortawesome/free-brands-svg-icons'
 import { SoftwareCard } from '../../../components/extensions/Card'
 import Header from '../../../components/Header'
-import { PLATFORM } from '../../../constants/static'
+import { PLATFORM, WEBSITE_NAME } from '../../../constants/static'
+import { BACKEND_API } from '../../../constants'
 
 const platformIcons = {
-  win: <FontAwesomeIcon className="h-7 w-7" icon={faWindows}/>,
-  'mac-intel': <FontAwesomeIcon className="h-7 w-7" icon={faApple}/>,
-  'mac-apple': <FontAwesomeIcon className="h-7 w-7" icon={faApple}/>
+  win: <FontAwesomeIcon className="h-7 w-7" icon={faWindows} />,
+  'mac-intel': <FontAwesomeIcon className="h-7 w-7" icon={faApple} />,
+  'mac-apple': <FontAwesomeIcon className="h-7 w-7" icon={faApple} />,
 }
 
 export default function SoftwarePlatform({ items, categories }) {
@@ -143,52 +145,62 @@ export default function SoftwarePlatform({ items, categories }) {
 
   return (
     <div id="page__extensions relative">
+      <Head>
+        <title>
+          {PLATFORM[query.slug].name} - 软件列表 - {WEBSITE_NAME}
+        </title>
+      </Head>
       <div className="extension__list flex space-x-4">
         <main className="flex-1">
           <Header>
             {/* <Image height={28} width={28} src={platformIcons[query.slug]} /> */}
             {platformIcons[query.slug]}
-            <span className="ml-2">{PLATFORM[query.slug]}</span>
+            <span className="ml-2">{PLATFORM[query.slug].name}</span>
           </Header>
-          <div className="mb-4 relative flex items-center justify-center space-x-4">
-            <span className="text-xl absolute left-0">推荐</span>
-            <label
-              htmlFor="selectAll"
-              className="flex items-center relative cursor-pointer"
-            >
-              <input
-                className="check-input w-5 h-5 mr-1 appearance-none border-2 border-primary/70 rounded"
-                type="checkbox"
-                id="selectAll"
-                checked={selectedAll}
-                onChange={onSelectAll}
-              />
-              <FontAwesomeIcon
-                icon={faCheck}
-                className="left-0 check-icon absolute w-5 h-5 text-opacity-0 text-primary transition-all duration-500"
-              />
-              <span className="select-none">全选</span>
-            </label>
-          </div>
-          <div className="recommend grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {data
-              .filter((item) => item.recommend)
-              .map((item) => (
-                <SoftwareCard
-                  id={item.id}
-                  key={item.id}
-                  name={item.name}
-                  image={item.image}
-                  url={item.url}
-                  browser={item.browser}
-                  category={item.category.name}
-                  changeSelect={changeSelect}
-                  checked={item.checked}
-                />
-              ))}
-          </div>
+          {data.filter((item) => item.recommend).length ? (
+            <Fragment>
+              <div className="mb-4 relative flex items-center justify-center space-x-4">
+                <span className="text-xl absolute left-0">推荐</span>
+                <label
+                  htmlFor="selectAll"
+                  className="flex items-center relative cursor-pointer"
+                >
+                  <input
+                    className="check-input w-5 h-5 mr-1 appearance-none border-2 border-primary/70 rounded"
+                    type="checkbox"
+                    id="selectAll"
+                    checked={selectedAll}
+                    onChange={onSelectAll}
+                  />
+                  <FontAwesomeIcon
+                    icon={faCheck}
+                    className="left-0 check-icon absolute w-5 h-5 text-opacity-0 text-primary transition-all duration-500"
+                  />
+                  <span className="select-none">全选</span>
+                </label>
+              </div>
+              <div className="recommend grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {data
+                  .filter((item) => item.recommend)
+                  .map((item) => (
+                    <SoftwareCard
+                      id={item.id}
+                      key={item.id}
+                      name={item.name}
+                      image={item.image}
+                      url={item.urls.find(obj => obj.platform === query.slug).url}
+                      browser={item.browser}
+                      category={item.category.name}
+                      changeSelect={changeSelect}
+                      checked={item.checked}
+                      path={`/software/${item.slug}`}
+                    />
+                  ))}
+              </div>
+            </Fragment>
+          ) : ''}
           <div className="flex py-4 justify-between">
-            <h2 className="text-xl">其他</h2>
+            <h2 className="text-xl">全部</h2>
             <div className="flex items-center">
               <FontAwesomeIcon
                 className="h-4 w-4 mr-1"
@@ -234,11 +246,12 @@ export default function SoftwarePlatform({ items, categories }) {
                   key={item.id}
                   name={item.name}
                   image={item.image}
-                  url={item.url}
+                  url={item.urls.find(obj => obj.platform === query.slug).url}
                   browser={item.browser}
                   category={item.category.name}
                   changeSelect={changeSelect}
                   checked={item.checked}
+                  path={`/software/${item.slug}`}
                 />
               ))}
           </div>
@@ -248,7 +261,7 @@ export default function SoftwarePlatform({ items, categories }) {
         </aside>
       </div>
       {selected().length ? (
-        <div className="extension__popup shadow rounded-md bg-300/30 backdrop-blur-sm h-12 container px-64 z-30 fixed bottom-2 flex items-center justify-between">
+        <div className="extension__popup shadow-lg rounded-md bg-50/70 backdrop-blur-sm h-12 container px-64 z-30 fixed bottom-2 flex items-center justify-between">
           <h4>已选择: {selected().length}</h4>
           {/* <select
             value={selectedPlatform}
@@ -264,8 +277,14 @@ export default function SoftwarePlatform({ items, categories }) {
           <div>
             <button
               className="hover:bg-300/70 px-3 py-1.5 rounded active:bg-300/90 mr-4"
-              onClick={() => setData(prevState => (prevState.map(item => ({...item, checked: false}))))}
-            >取消选择</button>
+              onClick={() =>
+                setData((prevState) =>
+                  prevState.map((item) => ({ ...item, checked: false }))
+                )
+              }
+            >
+              取消选择
+            </button>
             <button
               className="hover:bg-300/70 px-3 py-1.5 rounded active:bg-300/90"
               onClick={() => onOpenSelected()}
@@ -282,18 +301,18 @@ export default function SoftwarePlatform({ items, categories }) {
 }
 
 export const getServerSideProps = async ({ params }) => {
-  // const response = await fetch(
-  //   `http://127.0.0.1:8000/api/software/${params.slug}/`
-  // )
   const response = await fetch(
-    `https://ne-backend.ninetyeights.com/api/software/${params.slug}/`
+    `${BACKEND_API}/software/platform/${params.slug}/`
   )
+  // const response = await fetch(
+  //   `https://ne-backend.ninetyeights.com/api/software/${params.slug}/`
+  // )
   const { data, categories } = await response.json()
 
   return {
     props: {
       items: data,
-      categories
+      categories,
     },
   }
 }

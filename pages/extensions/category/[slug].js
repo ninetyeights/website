@@ -10,7 +10,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import Card from '../../../components/extensions/Card'
 import Header from '../../../components/Header'
-import getExtensions from '../../../lib/getExtensions'
+// import getExtensions from '../../../lib/getExtensions'
+import { BACKEND_API } from '../../../constants'
 
 const browserIcons = {
   chrome:
@@ -42,7 +43,7 @@ const categories = {
   other: '其他',
 }
 
-export default function Extensions({ items }) {
+export default function Extensions({ items, categories }) {
   const { query, asPath, replace } = useRouter()
   const categoryName = query.slug.charAt(0).toUpperCase() + query.slug.slice(1)
 
@@ -92,14 +93,14 @@ export default function Extensions({ items }) {
   }, [data])
 
   const updateCategory = () => {
-    let _categories = items
-      .filter((item) => !item.recommend)
-      .map((item) => item.category)
-    _categories = new Set(_categories)
+    // let _categories = items
+    //   .filter((item) => !item.recommend)
+    //   .map((item) => item.category)
+    // _categories = new Set(_categories)
     let obj = {
       all: '全部',
     }
-    Array.from(_categories).map((key) => {
+    Object.keys(categories).map((key) => {
       obj[key] = categories[key]
     })
     if (JSON.stringify(obj) !== JSON.stringify(categoriesName)) {
@@ -129,10 +130,10 @@ export default function Extensions({ items }) {
     replace(val === 'all' ? splitUrl[0] : splitUrl[0] + '#' + val)
   }
 
-  const changeSelect = (id) => {
+  const changeSelect = (slug) => {
     setData((prevState) =>
       prevState.map((item) => {
-        if (item._id === id) {
+        if (item.slug === slug) {
           return { ...item, checked: !item.checked }
         }
         return item
@@ -188,13 +189,13 @@ export default function Extensions({ items }) {
               .filter((item) => item.recommend)
               .map((item) => (
                 <Card
-                  id={item._id}
-                  key={item._id}
+                  id={item.slug}
+                  key={item.slug}
                   name={item.name}
                   image={item.image}
                   url={item.url}
                   browser={item.browser}
-                  category={categories[item.category]}
+                  category={item.category.name}
                   changeSelect={changeSelect}
                   checked={item.checked}
                 />
@@ -236,20 +237,20 @@ export default function Extensions({ items }) {
               .filter((item) =>
                 currentCategory === 'all'
                   ? item
-                  : item.category === currentCategory
+                  : item.category.slug === currentCategory
               )
               .filter((item) =>
                 item.name.toLowerCase().includes(keyword.toLowerCase().trim())
               )
               .map((item) => (
                 <Card
-                  id={item._id}
-                  key={item._id}
+                  id={item.slug}
+                  key={item.slug}
                   name={item.name}
                   image={item.image}
                   url={item.url}
                   browser={item.browser}
-                  category={categories[item.category]}
+                  category={item.category.name}
                   changeSelect={changeSelect}
                   checked={item.checked}
                 />
@@ -282,15 +283,13 @@ export default function Extensions({ items }) {
 }
 
 export const getServerSideProps = async ({ params }) => {
-  const res = await getExtensions(params)
-  let data = []
-  if (res.status === 'SUCCESS') {
-    data = res.data
-  }
+  const response = await fetch(`${BACKEND_API}/extensions/category/${params.slug}`)
+  const { categories, data } = await response.json()
 
   return {
     props: {
       items: data,
+      categories
     },
   }
 }

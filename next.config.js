@@ -4,11 +4,11 @@ const nextConfig = {
   swcMinify: false,
   images: {
     domains: [
-      'addons.mozilla.org',
-      'lh3.googleusercontent.com',
-      'store-images.s-microsoft.com',
-      'upload.wikimedia.org',
-      'is4-ssl.mzstatic.com',
+      // 'addons.mozilla.org',
+      // 'lh3.googleusercontent.com',
+      // 'store-images.s-microsoft.com',
+      // 'upload.wikimedia.org',
+      // 'is4-ssl.mzstatic.com',
     ],
   },
   eslint: {
@@ -16,7 +16,7 @@ const nextConfig = {
   },
   pageExtensions: ['js', 'jsx'],
   experimental: {
-    scrollRestoration: false,
+    scrollRestoration: true,
     images: {
       unoptimized: true,
     },

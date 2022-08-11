@@ -1,49 +1,80 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import Link from 'next/link'
+import Head from 'next/head'
 import Header from '../../components/Header'
 import { SoftwareCard } from '../../components/extensions/Card'
-import { PLATFORM } from '../../constants/static'
+import { PLATFORM, WEBSITE_NAME } from '../../constants/static'
+import { BACKEND_API } from '../../constants'
+// import { BACKEND_API } from '../../constants'
 
-export default function Software({ data }) {
+export default function Software({ data, platform }) {
+  useEffect(() => {
+    // console.log(API)
+  }, [])
   return (
     <div id="page__software relative">
+      <Head>
+        <title>软件列表 - {WEBSITE_NAME}</title>
+      </Head>
       <div className="software_list flex space-x-4">
         <main className="flex-1">
           <Header>
             {/* <Image height={28} width={28} src={browserIcons[query.slug]} /> */}
             <span className="ml-2">软件列表</span>
           </Header>
-          {Object.keys(data).map((key, index) => (
-            <Fragment key={key}>
-              <div className={`flex py-4 justify-between ${index > 0 ? 'mt-4' : ''}`}>
-                <h2 className="text-xl">{data[key].name} 推荐</h2>
-                <Link href={data[key].path}>
-                  <a className="flex items-center justify-center text-color-primary bg-color-primary/30 hover:bg-color-primary/60 active:bg-color-active/50 rounded px-2.5 py-1">
-                    查看全部
-                    {/* <FontAwesomeIcon
-                      className="ml-2"
-                      icon={faArrowUpRightFromSquare}
-                    /> */}
-                  </a>
-                </Link>
+          <div className="hidden py-4 justify-between">
+            <h2 className="text-xl">分类</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {platform.map((slug) => (
+              <div key={slug} className="shadow rounded-lg bg-white/50 flex flex-col h-full">
+                <img
+                  className="rounded-t-lg"
+                  src={PLATFORM[slug].thumbnail}
+                  alt=""
+                />
+                <div className="px-4 py-3 flex flex-col h-full">
+                  <h3 className="font-medium text-lg mb-1 hover:text-color-primary flex-none">
+                    <Link href={`/software/platform/${slug}`}>
+                      {PLATFORM[slug].name}
+                    </Link>
+                  </h3>
+                  <p className="text-gray-700 text-sm line-clamp-4 grow mb-3">
+                    {PLATFORM[slug].description}
+                  </p>
+                  <div className="flex-none">
+                    <Link href={`/software/platform/${slug}`}>
+                      <a className="px-2 py-1 rounded text-sm text-color-primary hover:bg-200/60 active:bg-200/90 inline-flex items-center">
+                        <span>查看分类</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+</svg>
+                      </a>
+                    </Link>
+                  </div>
+                </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {data[key].items
-                  .map((item) => (
-                    <SoftwareCard
-                      id={item.id}
-                      key={item.id}
-                      name={item.name}
-                      image={item.image}
-                      url={item.url}
-                      browser={item.browser}
-                      category={item.category.name}
-                      hideChecked={true}
-                    />
-                  ))}
-              </div>
-            </Fragment>
-          ))}
+            ))}
+          </div>
+          <div className="flex py-4 justify-between">
+            <h2 className="text-xl">推荐</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {data.map((item) => (
+              <SoftwareCard
+                id={item.id}
+                key={item.id}
+                name={item.name}
+                image={item.image}
+                // url={item.urls.find(item => item.platform === )}
+                browser={item.browser}
+                category={item.category.name}
+                checked={item.checked}
+                hideChecked={true}
+                path={`/software/${item.slug}`}
+              />
+            ))}
+          </div>
         </main>
         <aside className="hidden xl:block w-64">
           <h4 className="mt-6">侧边栏</h4>
@@ -55,26 +86,19 @@ export default function Software({ data }) {
 
 export const getServerSideProps = async () => {
   // const { data } = await getSoftwares()
-  // const response = await fetch('http://127.0.0.1:8000/api/software/')
-  const response = await fetch('https://ne-backend.ninetyeights.com/api/software/')
-  const {data} = await response.json()
-
-  if ('win' in data){
-    data['win']['name'] = PLATFORM['win']
-    data['win']['path'] = '/software/platform/win'
-  }
-  if ('mac-intel' in data){
-    data['mac-intel']['name'] = PLATFORM['mac-intel']
-    data['mac-intel']['path'] = '/software/platform/mac-intel'
-  }
-  if ('mac-apple' in data){
-    data['mac-apple']['name'] = PLATFORM['mac-apple']
-    data['mac-apple']['path'] = '/software/platform/mac-apple'
-  }
+  // let baseUrl = 'http://127.0.0.1:8000/api'
+  // console.log(process.env.BACKEND_API)
+  // if (process.env.BACKEND_API) {
+  //   baseUrl = process.env.BACKEND_API
+  // }
+  const response = await fetch(`${BACKEND_API}/software/`)
+  // const response = await fetch('https://ne-backend.ninetyeights.com/api/software/')
+  const { data, platform } = await response.json()
 
   return {
     props: {
-      data
+      data,
+      platform,
     },
   }
 }

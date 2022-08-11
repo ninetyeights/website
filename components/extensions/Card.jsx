@@ -121,6 +121,7 @@ function SoftwareCard({
   id,
   name,
   url,
+  path,
   image,
   browser,
   category,
@@ -132,7 +133,7 @@ function SoftwareCard({
     <div className="extension__item relative group flex items-center justify-between space-x-3 rounded-lg bg-gray-100/50 dark:bg-gray-100/5 p-3 hover:bg-color-primary/30 dark:hover:bg-color-primary/10 transition duration-500">
       <div className="flex items-center space-x-3 w-full relative z-20">
         <div className="bg-white dark:bg-white/5 min-w-12 w-12 h-12 flex items-center justify-center rounded-xl">
-          <Link href={`/softwares/${id}`}>
+          <Link href={path}>
             <a
               title={name}
               className="inline-flex rounded overflow-hidden ease-in-out"
@@ -153,7 +154,7 @@ function SoftwareCard({
         </div>
         <div>
           <h6 className="w-full group-hover:w-48 group-hover:lg:w-40 transition-all duration-300">
-            <Link href={`/softwares/${id}`}>
+            <Link href={path}>
               <a
                 className="line-clamp-1 break-all hover:text-color-primary relative after:absolute after:bottom-0.5 after:left-0 after:content-[''] after:h-[2px] hover:after:h-[2px] after:w-0 hover:after:w-24 after:transition-all after:duration-500 after:bg-color-primary-reverse after:rounded-full"
                 title={name}
@@ -204,14 +205,14 @@ function SoftwareCard({
             />
           </label>
         )}
-        {/* <a
+        {url ? <a
           href={url}
           className="select-none cursor-pointer relative ml-1 px-2 z-10 flex items-center justify-center w-full h-full whitespace-nowrap text-slate-700 hover:after:opacity-60 after:opacity-0 after:rounded-r-lg after:z-[-1] after:content-[''] after:h-full after:w-0 hover:after:w-full after:right-0 after:top-0 after:absolute after:bg-gradient-to-l after:from-500 after:via-500 after:to-transparent after:transition-all after:duration-300 rounded-r-lg"
           target="_blank"
           rel="noreferrer noopener nofollow"
         >
-          打开
-        </a> */}
+          下载
+        </a> : ''}
       </div>
     </div>
   )

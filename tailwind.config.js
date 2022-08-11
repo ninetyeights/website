@@ -36,30 +36,32 @@ module.exports = {
             },
             textColor: {
                 color: {
-                    primary: withOpacityValue('--text-primary'),
+                    primary: withOpacityValue('--600'),
                 }
             },
             backgroundColor: {
                 color: {
-                    primary: withOpacityValue('--bg-primary'),
+                    primary: withOpacityValue('--200'),
                     active: withOpacityValue('--300'),
-                    'primary-reverse': withOpacityValue('--text-primary'),
+                    'primary-reverse': withOpacityValue('--600'),
                 }
             },
             accentColor: {
-                primary: withOpacityValue('--accent-primary')
+                primary: withOpacityValue('--700')
             },
             colors: {
-                primary: withOpacityValue('--text-primary'),
-                second: withOpacityValue('--bg-primary'),
+                primary: withOpacityValue('--600'),
+                second: withOpacityValue('--200'),
                 '900': withOpacityValue('--900'),
                 '800': withOpacityValue('--800'),
-                '700': withOpacityValue('--accent-primary'),
-                '600': withOpacityValue('--text-primary'),
+                '700': withOpacityValue('--700'),
+                '600': withOpacityValue('--600'),
                 '500': withOpacityValue('--500'),
                 '400': withOpacityValue('--400'),
                 '300': withOpacityValue('--300'),
-                '200': withOpacityValue('--bg-primary'),
+                '200': withOpacityValue('--200'),
+                '100': withOpacityValue('--100'),
+                '50': withOpacityValue('--50'),
             }
         },
     },
