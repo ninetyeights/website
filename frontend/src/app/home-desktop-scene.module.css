@@ -1,0 +1,16 @@
+.scene{position:absolute;top:50%;border-radius:13px;background:radial-gradient(ellipse at 80% 90%,#8bcab3,transparent 65%),linear-gradient(135deg,#3b6585,#5a91a4);box-shadow:0 20px 45px #22495620;color:#294955;border:1px solid #ffffff50;isolation:isolate}
+.heading{display:flex;justify-content:space-between;padding:13px 17px;font-size:8px;letter-spacing:1px;color:#edf7fa}
+.browser{position:absolute;background:#f9fcfd;border:1px solid white;border-radius:8px;box-shadow:0 10px 22px #193d5025}
+.work{width:60%;height:187px;left:7%;top:52px;z-index:2;transform:rotate(2deg)}
+.personal{width:46%;height:165px;right:4%;top:98px;transform:rotate(-3deg);z-index:3}
+.titlebar{height:25px;display:flex;align-items:center;gap:7px;padding:0 10px;font-size:7px;background:#eef4f6;border-radius:8px 8px 0 0}
+.dots{display:block;width:4px;height:4px;background:#a8bcc7;border-radius:50%;box-shadow:7px 0 #a8bcc7,14px 0 #a8bcc7;margin-right:14px}
+.address{font-size:6px;color:#8da4ae;border-bottom:1px solid #edf2f4;padding:5px 12px}
+.document{padding:13px 15px}.document small{font-size:5px;letter-spacing:1.4px;color:#88a3ad}.document strong{display:block;font-size:19px;line-height:1.4;font-weight:550;margin:7px 0 12px}.document i{display:block;width:75%;height:4px;border-radius:2px;background:#e2ebef;margin-top:6px}.document i:last-child{width:50%}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:13px}.tiles span{height:30px;background:#e7eef2;border-radius:4px}.tiles span:first-child{grid-column:1/-1;height:43px;background:linear-gradient(120deg,#c0dfd5,#a8cbd6)}
+.badge{position:absolute;top:-15px;right:5px;display:flex;align-items:center;gap:6px;border-radius:20px;padding:3px 9px 3px 3px;color:white;box-shadow:0 4px 12px #24415820;font-size:8px;border:1px solid #ffffffa0}
+.badge b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#ffffff28;font-size:12px;font-weight:500}.workBadge{background:linear-gradient(120deg,#6554c6,#9881dc)}.personalBadge{background:linear-gradient(120deg,#238a7c,#6bb899)}
+.ghost{position:absolute;left:3%;top:77px;width:55%;height:170px;border:1px dashed #e9ffff90;border-radius:8px;background:#ffffff08;transform:rotate(-2deg)}
+.cursor{position:absolute;left:20%;top:67%;z-index:4;filter:drop-shadow(0 2px 2px #19364b30);color:#294854}.cursor span{display:block;white-space:nowrap;background:#fff;padding:3px 7px;border-radius:4px;font-size:8px;margin-left:17px;margin-top:-2px;color:#456578}
+.dragHint{position:absolute;left:8%;bottom:18px;display:flex;gap:7px;align-items:center;color:#ecf9f6;font-size:8px}
+.badgeHint{position:absolute;right:4%;top:45px;display:flex;gap:5px;align-items:center;font-size:7px;letter-spacing:.3px;color:#e5f6f0}

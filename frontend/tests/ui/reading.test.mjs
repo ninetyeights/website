@@ -1,0 +1,36 @@
+import test from 'node:test';
+import { chromium } from 'playwright';
+import assert from 'node:assert/strict';
+test('reading.test', { timeout: 60000 }, async (t) => {
+    const browser = await chromium.launch();
+    t.after(() => browser.close());
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    let release;
+    await page.route('https://translate.googleapis.com/**', async (route) => { await new Promise(r => release = r); await route.fulfill({ json: [[['你好\n'.repeat(300), 'hello']], null, 'en'] }); });
+    await page.goto('http://127.0.0.1:3000/tools/translate');
+    const guarded = () => page.evaluate(() => { const e = new Event('beforeunload', { cancelable: true }); window.dispatchEvent(e); return e.defaultPrevented; });
+    assert.equal(await guarded(), false);
+    await page.locator('#translation-source').fill('hello');
+    await page.getByRole('button', { name: '翻译', exact: true }).click();
+    await page.getByRole('button', { name: '取消', exact: true }).waitFor();
+    await page.waitForTimeout(100);
+    assert.equal(await guarded(), true);
+    release();
+    await page.locator('.translation-result').waitFor();
+    assert.equal(await guarded(), false);
+    const target = page.getByRole('region', { name: '译文内容' });
+    const before = await target.boundingBox();
+    await page.getByRole('button', { name: '展开译文', exact: true }).click();
+    assert.equal(await page.locator('#translation-source').isVisible(), false);
+    assert((await target.boundingBox()).width > before.width * 1.8);
+    await page.getByRole('button', { name: '恢复双栏', exact: true }).click();
+    assert(await page.locator('#translation-source').isVisible());
+    assert.equal(await page.locator('#translation-source').inputValue(), 'hello');
+    await page.getByRole('button', { name: '翻译', exact: true }).click();
+    await page.getByRole('button', { name: '取消', exact: true }).click();
+    assert.equal(await guarded(), false);
+    if (release)
+        release();
+    console.log('PASS expand/restore, source retained, unload guard only while busy and removed on completion/cancel');
+    await browser.close();
+});

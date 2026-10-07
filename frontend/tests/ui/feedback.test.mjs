@@ -1,0 +1,25 @@
+import test from 'node:test';
+import { chromium } from 'playwright';
+import assert from 'node:assert/strict';
+test('feedback.test', { timeout: 60000 }, async (t) => {
+    const browser = await chromium.launch();
+    t.after(() => browser.close());
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await page.route('https://translate.googleapis.com/**', async (route) => { await new Promise(r => setTimeout(r, 200)); await route.fulfill({ json: [[['你好', 'Hello']], null, 'en'] }); });
+    await page.goto('http://127.0.0.1:3000/tools/translate');
+    await page.locator('#translation-source').fill('Hello');
+    await page.getByRole('button', { name: '翻译', exact: true }).click();
+    await page.locator('.translation-complete-check').waitFor();
+    await page.waitForTimeout(350);
+    assert(Number(await page.locator('.translation-complete-check').evaluate(e => getComputedStyle(e).opacity)) > .8);
+    await page.waitForTimeout(2200);
+    assert.equal(await page.locator('.translation-complete-check').evaluate(e => getComputedStyle(e).opacity), '0');
+    assert.equal(await page.locator('.translation-progress-complete').evaluate(e => getComputedStyle(e).opacity), '0');
+    await page.getByRole('button', { name: '清空', exact: true }).click();
+    assert.equal(await page.locator('.translation-complete-check').count(), 0);
+    assert.equal(await page.getByText(/耗时 .* 秒/).count(), 0);
+    await page.setViewportSize({ width: 390, height: 844 });
+    assert(await page.evaluate(() => document.documentElement.scrollWidth === innerWidth));
+    console.log('PASS: completion feedback appears and fades, clear resets feedback and duration, mobile has no horizontal overflow');
+    await browser.close();
+});

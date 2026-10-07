@@ -1,0 +1,102 @@
+name: ${COMPOSE_PROJECT_NAME:-ninetyeights}
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+      args:
+        SITE_URL: ${SITE_URL:-https://ninetyeights.com}
+    restart: unless-stopped
+    init: true
+    environment:
+      API_INTERNAL_URL: http://backend:8000
+      GA_MEASUREMENT_ID: ${GA_MEASUREMENT_ID:-}
+      GA_ALLOWED_DOMAINS: ${GA_ALLOWED_DOMAINS:-}
+      SITE_URL: ${SITE_URL:-https://ninetyeights.com}
+      NEXT_TELEMETRY_DISABLED: "1"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 10s
+      retries: 6
+      start_period: 30s
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      target: web
+    restart: unless-stopped
+    init: true
+    environment:
+      HOST_PROXY_IP: ${HOST_PROXY_IP:-127.0.0.1}
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-3000}:3000"
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      php:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8000/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+  php:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      target: runtime
+    restart: unless-stopped
+    init: true
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      CACHE_STORE: database
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: warning
+      TRUSTED_PROXY_HOSTS: frontend,backend
+      TRUSTED_PROXY_IPS: ${TRUSTED_PROXY_IPS:-}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: ${POSTGRES_DB:-ninetyeights}
+      DB_USERNAME: ${POSTGRES_USER:-ninetyeights}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the root .env.production file}
+    volumes:
+      - type: bind
+        source: ./backend/.env.production
+        target: /app/.env
+        read_only: true
+        bind:
+          create_host_path: false
+      - backend_storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', 9000) === false ? 1 : 0);"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+  postgres:
+    image: postgres:17-bookworm@sha256:051f7b7b3abdd564d5d1bd1e8c4b9c1b6e77087d1dd22020ede611c096a272e0
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ninetyeights}
+      POSTGRES_USER: ${POSTGRES_USER:-ninetyeights}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the root .env.production file}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+volumes:
+  backend_storage:
+  postgres_data:

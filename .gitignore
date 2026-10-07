@@ -1,0 +1,82 @@
+# Local environment and credentials (keep configuration templates)
+.env
+.env.*
+!.env.example
+!.env.*.example
+auth.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Dependencies and generated frontend output
+node_modules/
+/backend/vendor/
+/frontend/.next/
+/frontend/out/
+/frontend/build/
+*.tsbuildinfo
+.vercel/
+.turbo/
+.cache/
+
+# Test and coverage artifacts
+coverage/
+test-results/
+playwright-report/
+blob-report/
+.nyc_output/
+.phpunit.cache/
+.phpunit.result.cache
+
+# Logs, local databases and temporary files
+*.log
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+*.tmp
+*.swp
+*.swo
+*~
+
+# OS and local editor state
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vs/
+*.suo
+*.user
+*.code-workspace
+
+# Local notes and design snapshots
+/todo.md
+/development-spec.md
+/design-backups/
+
+# Local security audit and deployment instructions
+/SECURITY-AUDIT.md
+/SECURITY-DEPENDENCIES.json
+/VPS-DEPLOYMENT.md
+
+# Download metadata and unused starter/export assets
+*Zone.Identifier
+/backend/README.md
+/frontend/README.md
+/frontend/public/file.svg
+/frontend/public/globe.svg
+/frontend/public/next.svg
+/frontend/public/vercel.svg
+/frontend/public/window.svg
+/frontend/public/projects/audiodeviceswitcher/readme/
+
+# Local branding drafts (retain the selected identity and UI reference)
+/frontend/public/brand/*
+!/frontend/public/brand/jiuba-gray-cat-v1.png
+!/frontend/public/brand/jiuba-gray-cat-v1.ico
+!/frontend/public/brand/jiuba-98-geometric-v1.png

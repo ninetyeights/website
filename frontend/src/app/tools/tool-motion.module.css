@@ -1,0 +1,28 @@
+/* Shared motion for tool pages. Animate containers only, never live clock values
+   or individual diff tokens, to keep typing and long comparisons responsive. */
+.header,.primary,.controls { animation: none; }
+.panel,.result { animation: tool-enter 320ms cubic-bezier(.25, .1, .25, 1) both; }
+.panel[data-entrance] { animation: none; }
+.view { animation: tool-fade 240ms ease-out both; }
+.tabs { border-radius: calc(var(--radius-lg) + 4px); position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tabIndicator {
+  position: absolute;
+  inset: 4px auto 4px 4px;
+  width: calc((100% - 8px) / 2);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+  pointer-events: none;
+  transition: transform 280ms cubic-bezier(.22, 1, .36, 1);
+}
+.tabIndicator[data-second='true'] { transform: translateX(100%); }
+.tab { position: relative; z-index: 1; transition: color 180ms ease; }
+@keyframes tool-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes tool-fade { from { opacity: .35; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .header, .primary, .controls, .panel, .result, .view { animation: none; }
+  .tabIndicator, .tab { transition: none; }
+}

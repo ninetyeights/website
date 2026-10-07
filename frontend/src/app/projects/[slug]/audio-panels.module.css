@@ -1,0 +1,62 @@
+
+.frame{position:relative;width:100%;margin-inline:auto;overflow:hidden;border-radius:8px;box-shadow:0 15px 45px #24364d15}
+.window{transform-origin:top left;border:1px solid #bcc3be;border-radius:8px;overflow:hidden;background:#fff;color:#15324f;font:12px/1.45 "Segoe UI","Microsoft YaHei",sans-serif;text-align:left}
+.title{height:31px;background:#f1f4ed;display:flex;align-items:center;gap:6px;padding:0 8px;color:#17251f}
+.logo{display:grid;place-items:center;background:#b45cff;color:white;width:16px;height:16px;border-radius:4px;font-size:14px;font-weight:800;line-height:1}
+.chrome{display:flex;align-items:center;gap:34px;margin-left:auto;padding-right:10px}
+.window button{border:1px solid #d0d7e2;border-radius:4px;min-height:28px;padding:3px 12px;background:#fff;color:#184477;font:inherit;cursor:pointer}
+.window button:disabled{color:#919ba7;cursor:default}
+.window button:focus-visible,.window input:focus-visible,.window select:focus-visible{outline:2px solid #326aff;outline-offset:1px}
+.window input[type=checkbox]{appearance:auto;accent-color:#467bef;margin-right:5px;vertical-align:middle}
+.window input[type=range]{appearance:auto;accent-color:#c3c7cb;width:95px;height:18px}
+.window .danger{color:#ef4545}
+.appBody{padding:16px}
+.toolbar{display:flex;gap:8px;margin:8px 0}
+.appRows{display:grid;gap:6px;position:relative;padding-right:8px}
+.appRows:after{content:"";position:absolute;right:0;top:0;width:6px;height:283px;border-radius:5px;background:#d2d6dc}
+.appRow{height:64px;display:grid;grid-template-columns:28px 220px 188px 180px 180px;gap:10px;align-items:center;border:1px solid #e0e3e9;border-radius:7px;background:#f8f9fb;padding:8px 10px}
+.appIdentity{min-width:0}
+.appIdentity strong{display:block;color:#082441;font-weight:400}
+.appIdentity small{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:10px;font-size:10px;color:#7084a2}
+.volume{font-size:10px;color:#7185a0}
+.volume>div{display:flex;align-items:center;gap:4px;margin-top:8px}
+.volume label{color:#111;white-space:nowrap}
+.volume small{font-size:10px}
+.selector{font-size:10px;color:#7384a0;display:grid;gap:3px}
+.selector select{width:100%;height:29px;background:white;border:1px solid #cfd7e1;border-radius:3px;padding:3px 8px;font-size:11px;color:#122844}
+.appFooter{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.appFooter>span{font-size:11px;color:#6e819a}
+.scheduleBody{padding:16px}
+.catchup{display:block;color:#14293e;margin-top:6px}
+.hint{font-size:11px;color:#7c8ca1;padding-left:20px;margin-top:3px}
+.tableWrap{height:360px;border:1px solid #e0e4ea;margin-top:10px}
+.tableWrap table{width:100%;border-collapse:collapse;table-layout:fixed}
+.tableWrap th{font-weight:500;background:#f2f3f5;color:#455e7a;text-align:left;height:34px;border-bottom:1px solid #e0e4ea}
+.tableWrap th,.tableWrap td{padding:8px}
+.tableWrap th:nth-child(1){width:56px}.tableWrap th:nth-child(2){width:120px}.tableWrap th:nth-child(3){width:160px}.tableWrap th:nth-child(4){width:138px}
+.tableWrap td{height:38px;font-size:11px;border-bottom:1px solid #f2f3f5}
+.tableWrap tr:nth-child(2){background:#f8f9fa}
+.tableWrap tr[data-selected=true]{background:#edf4ff;outline:1px solid #c9daf5}
+.tableWrap td button{border:0;background:transparent;padding:0;min-height:20px}
+.warning{color:#c35e16;font-size:11px}
+.profileBody{padding:16px}
+.field{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.field>span,.field>label{width:40px;flex-shrink:0}
+.field input{flex:1;min-width:0;height:29px;border:1px solid #cfd5e0;border-radius:4px;padding:3px 8px;color:#566e8b}
+.field:first-child input{border-color:#567fff}
+.colors{display:flex;align-items:center;gap:8px;margin-top:5px}
+.colors button{width:20px;height:20px;min-height:20px;padding:0;border-radius:50%;border:2px solid #e5e7eb}
+.colors button[aria-pressed=true]{outline:1px solid #1b2635}
+.ruleHeading{display:flex;align-items:center;gap:10px;margin-top:18px;margin-bottom:6px}
+.ruleHeading strong{font-size:13px}
+.ruleHeading span{font-size:11px;color:#768ba5}
+.ruleHeading button{padding-inline:8px}
+.rules{height:260px;border:1px solid #dfe4ec;border-radius:4px;padding:4px 8px}
+.rules>div{display:flex;gap:6px;align-items:start;margin-bottom:4px}
+.rules>div>span{flex:1}
+.rules small{display:block;font-size:10px;color:#5c7694}
+.rules button{padding-inline:8px}
+.profileFooter{display:flex;gap:8px;margin-top:12px;align-items:center}
+.profileFooter>span{flex:1;font-size:11px;color:#526f8b}
+.profileFooter button{min-width:80px}
+.profileFooter .save{border-color:#a3c5ff;background:#eff6ff;color:#235bfa}

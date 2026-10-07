@@ -1,0 +1,57 @@
+# Keep environment templates; exclude real credentials.
++ .env.example
++ .env.*.example
+- .env
+- .env.*
+- auth.json
+- *.pem
+- *.key
+- *.p12
+- *.pfx
+- *Zone.Identifier
+
+# Local metadata, dependencies, builds and test output.
+- .git/
+- .agents/
+- .codex/
+- .aws/
+- node_modules/
+- /backend/vendor/
+- /frontend/.next/
+- /frontend/out/
+- /frontend/build/
+- .vercel/
+- .turbo/
+- .cache/
+- .idea/
+- .vs/
+- coverage/
+- test-results/
+- playwright-report/
+- blob-report/
+- .phpunit.cache/
+- .phpunit.result.cache
+- *.tsbuildinfo
+- *.log
+- *.sqlite*
+- *.tmp
+- *.swp
+- *.swo
+- *~
+- .DS_Store
+- Thumbs.db
+- Desktop.ini
+
+# Local notes and documents excluded from deployment.
+- /SECURITY-AUDIT.md
+- /SECURITY-DEPENDENCIES.json
+- /VPS-DEPLOYMENT.md
+- /todo.md
+- /development-spec.md
+- /design-backups/
+- /backend/bootstrap/cache/*.php
+
+# Keep Laravel storage directory skeleton, not local runtime data.
++ /backend/storage/**/
++ /backend/storage/**/.gitignore
+- /backend/storage/**
