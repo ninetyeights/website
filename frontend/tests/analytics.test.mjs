@@ -21,10 +21,11 @@ test('Google tag queues config and events as Arguments objects', () => {
   assert.deepEqual(Array.from(target.dataLayer[2]), ['event', 'tool_success', { tool_name: 'translate' }]);
 });
 
-test('both CSP policies permit Google Analytics collection endpoints', () => {
+test('enforced CSP permits Google Analytics collection endpoints without a trial report policy', () => {
   const policy = readFileSync(new URL('../../docker/backend/security-headers.inc', import.meta.url), 'utf8');
   const headers = [...policy.matchAll(/add_header Content-Security-Policy(?:-Report-Only)? "([^"]+)"/g)];
-  assert.equal(headers.length, 2);
+  assert.equal(headers.length, 1);
+  assert.ok(!policy.includes('add_header Content-Security-Policy-Report-Only'));
   for (const [, header] of headers) {
     const connect = header.split(';').find(value => value.trim().startsWith('connect-src ')).trim().split(/\s+/);
     assert.ok(connect.includes('https://analytics.google.com'));
