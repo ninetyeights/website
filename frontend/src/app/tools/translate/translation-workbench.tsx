@@ -13,14 +13,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { translateDocument } from '@/lib/translation';
+import { browserSourceLanguages, browserTranslationAvailability, translateInBrowser, type BrowserTranslationAvailability, type LocalTranslationTimings } from '@/lib/browser-translation';
 
-type Provider = 'google_web' | 'google_cloud' | 'azure';
-type Result = { translatedText: string; detectedSourceLanguage: string | null; provider: Provider; elapsedMs: number };
+type Provider = 'google_web' | 'google_cloud' | 'azure' | 'browser_local';
+type Result = { translatedText: string; detectedSourceLanguage: string | null; provider: Provider; elapsedMs: number; timings?: LocalTranslationTimings };
 
 const providerOptions: { value: Provider; label: string }[] = [
   { value: 'google_web', label: 'Google 翻译' },
   { value: 'google_cloud', label: 'Google Cloud' },
   { value: 'azure', label: '微软 Azure Translator' },
+  { value: 'browser_local', label: '浏览器本地翻译' },
 ];
 
 const panel = 'surface translation-panel flex h-[30rem] min-w-0 flex-col overflow-hidden lg:h-auto lg:min-h-0';
@@ -82,7 +84,15 @@ export function TranslationWorkbench() {
   const shortcut = useSyncExternalStore(subscribeToPlatform, shortcutLabel, serverShortcutLabel);
   const [text, setText] = useState('');
   const [provider, setProvider] = useState<Provider>('google_web');
-  const [providers, setProviders] = useState(() => providerOptions.filter(item => item.value === 'google_web'));
+  const [sourceLanguage, setSourceLanguage] = useState('auto');
+  const [detectedLocalLanguage, setDetectedLocalLanguage] = useState<string | null>(null);
+  const [localAvailability, setLocalAvailability] = useState<BrowserTranslationAvailability | 'checking'>('checking');
+  const [providers, setProviders] = useState(() => providerOptions.filter(item => item.value === 'google_web' || item.value === 'browser_local'));
+  useEffect(() => {
+    let active = true;
+    void browserTranslationAvailability(sourceLanguage).then(value => { if (active) setLocalAvailability(value); });
+    return () => { active = false; };
+  }, [sourceLanguage]);
   useEffect(() => {
     const request = new AbortController();
     fetch('/api/tools/translate/providers', { signal: request.signal, cache: 'no-store', headers: { Accept: 'application/json' } })
@@ -92,7 +102,7 @@ export function TranslationWorkbench() {
       })
       .then(data => {
         if (!request.signal.aborted && Array.isArray(data?.providers)) {
-          setProviders(providerOptions.filter(item => item.value === 'google_web' || data.providers.includes(item.value)));
+          setProviders(providerOptions.filter(item => item.value === 'google_web' || item.value === 'browser_local' || data.providers.includes(item.value)));
         }
       })
       .catch(() => {});
@@ -139,13 +149,15 @@ export function TranslationWorkbench() {
     return () => window.removeEventListener('beforeunload', warnBeforeLeaving);
   }, [busy]);
   function invalidate() {
+    // 修改正文、服务或源语言后清除识别缓存，避免复用上一份文本的语言。
+    setDetectedLocalLanguage(null);
     revision.current++;
     controller.current?.abort();
     controller.current = null;
     setBusy(false); setResult(null); setError(''); setCopyStatus(''); setRetryStatus('');
   }
   async function translate() {
-    if (!text.trim() || controller.current) return;
+    if (!text.trim() || controller.current || (provider === 'browser_local' && (localAvailability === 'unavailable' || localAvailability === 'checking'))) return;
     const request = new AbortController();
     controller.current = request;
     const current = ++revision.current;
@@ -154,11 +166,15 @@ export function TranslationWorkbench() {
     const started = performance.now();
     try {
       // Give the browser a chance to show the busy state before splitting long input.
-      await new Promise(resolve => setTimeout(resolve, 0));
+      if (provider !== 'browser_local') await new Promise(resolve => setTimeout(resolve, 0));
       request.signal.throwIfAborted();
-      const data = await translateDocument(text, provider, request.signal, (done, total) => {
+      const updateProgress = (done: number, total: number) => {
         if (current === revision.current) setProgress({ done, total });
-      }, message => { if (current === revision.current) setRetryStatus(message); });
+      };
+      const updateStatus = (message: string) => { if (current === revision.current) setRetryStatus(message); };
+      const data = provider === 'browser_local'
+        ? await translateInBrowser(text, sourceLanguage === 'auto' ? detectedLocalLanguage ?? 'auto' : sourceLanguage, request.signal, updateProgress, updateStatus, language => { if (current === revision.current) setDetectedLocalLanguage(language); })
+        : await translateDocument(text, provider, request.signal, updateProgress, updateStatus);
       if (current === revision.current) {
         setResult({ ...data, elapsedMs: performance.now() - started });
         trackToolSuccess('translate');
@@ -201,7 +217,7 @@ export function TranslationWorkbench() {
         <section data-entrance className={panel} style={readingMode ? { display: 'none' } : undefined}>
           <div className={panelHeader}>
             <label htmlFor="translation-source" className="truncate text-sm font-medium">
-              原文<span className="font-normal text-muted-foreground"> · 自动识别语言</span>
+              原文<span className="font-normal text-muted-foreground"> · {provider === 'browser_local' && sourceLanguage !== 'auto' ? '指定源语言' : '自动识别语言'}</span>
             </label>
             <Select
               value={provider}
@@ -222,6 +238,16 @@ export function TranslationWorkbench() {
               </SelectContent>
             </Select>
           </div>
+          {provider === 'browser_local' && <div className="flex shrink-0 flex-wrap items-center gap-2 border-b bg-secondary/30 px-4 py-2 md:px-6">
+            <Select value={sourceLanguage} items={browserSourceLanguages} onValueChange={value => { if (value && value !== sourceLanguage) { invalidate(); setLocalAvailability('checking'); setSourceLanguage(value); } }}>
+              <SelectPrimitive.Label className="text-xs text-muted-foreground">源语言</SelectPrimitive.Label>
+              <SelectTrigger size="sm" aria-label="源语言"><SelectValue /></SelectTrigger>
+              <SelectContent alignItemWithTrigger={false}>{browserSourceLanguages.map(item => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}</SelectContent>
+            </Select>
+            <span role="status" className="min-w-0 flex-1 text-xs leading-5 text-muted-foreground">
+              {localAvailability === 'checking' ? '正在检查本地翻译支持…' : localAvailability === 'unavailable' ? sourceLanguage === 'auto' ? '当前浏览器不支持自动识别或本地翻译，请手动选择源语言或其他服务。' : '当前浏览器、设备或语言对不支持，请选择其他翻译服务。' : detectedLocalLanguage ? `识别语言：${languageName(detectedLocalLanguage)}` : localAvailability === 'available' ? '本地翻译已就绪' : '点击翻译后准备语言模型，首次使用可能需要下载。'}
+            </span>
+          </div>}
           <textarea
             ref={sourceArea}
             onScroll={() => syncFrom('source')}
@@ -247,9 +273,9 @@ export function TranslationWorkbench() {
               <Button variant="ghost" disabled={!text} onClick={() => { invalidate(); setText(''); }}>
                 <Eraser aria-hidden="true" />清空
               </Button>
-              <Button className="translation-submit min-w-28" disabled={!text.trim() || busy} onClick={() => void translate()}>
+              <Button className="translation-submit min-w-28" disabled={!text.trim() || busy || (provider === 'browser_local' && (localAvailability === 'checking' || localAvailability === 'unavailable'))} onClick={() => void translate()}>
                 {busy ? <Loader2 className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <Languages aria-hidden="true" />}
-                {busy ? '翻译中…' : '翻译'}
+                {busy ? provider === 'browser_local' && !progress.total ? '准备中…' : '翻译中…' : '翻译'}
               </Button>
             </div>
           </div>
@@ -260,7 +286,7 @@ export function TranslationWorkbench() {
               译文<span className="font-normal text-muted-foreground"> · 简体中文</span>
             </h2>
             <div className="flex min-w-0 items-center gap-2">
-              {detected && <span className="hidden truncate text-xs text-muted-foreground sm:block">识别语言：{detected}</span>}
+              {detected && <span className="hidden truncate text-xs text-muted-foreground sm:block">{result?.provider === 'browser_local' ? '源语言' : '识别语言'}：{detected}</span>}
               <Button variant="ghost" size="icon" disabled={!result}
                 aria-label={readingMode ? '恢复双栏' : '展开译文'}
                 aria-pressed={readingMode}
@@ -278,7 +304,10 @@ export function TranslationWorkbench() {
           </div>
           <div ref={targetArea} onScroll={() => syncFrom('target')} tabIndex={0} role="region" aria-label="译文内容" className="translation-scroll min-h-0 flex-1 overflow-y-auto p-4 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-primary md:p-6">
             {error ? (
-              <p role="alert" className="rounded-lg bg-destructive/5 p-4 text-sm text-destructive">{error}</p>
+              <div className="space-y-3">
+                <p role="alert" className="rounded-lg bg-destructive/5 p-4 text-sm text-destructive">{error}</p>
+
+              </div>
             ) : busy ? (
               <TranslationProgress done={progress.done} total={progress.total} retryStatus={retryStatus} />
             ) : result ? (
@@ -303,6 +332,9 @@ export function TranslationWorkbench() {
                   <span className="sr-only">翻译完成</span>
                 </span>
               )}
+              {result?.timings && <span className="leading-5 tabular-nums" title="准备包含模型下载和初始化。">
+                准备 {(result.timings.preparationMs / 1000).toFixed(2)} 秒 · 识别 {(result.timings.detectionMs / 1000).toFixed(2)} 秒 · 翻译 {(result.timings.translationMs / 1000).toFixed(2)} 秒
+              </span>}
               {copyStatus && <span>{copyStatus}</span>}
             </span>
             <Button variant="outline" disabled={!result} onClick={() => void copy()}>
@@ -313,7 +345,7 @@ export function TranslationWorkbench() {
         </section>
       </div>
       <p data-entrance className="shrink-0 text-xs text-muted-foreground">
-        文本将发送至{provider === 'azure' ? '微软 Azure Translator' : 'Google 翻译'}服务处理，本站不保存翻译正文。
+        {provider === 'browser_local' ? '文本在本机处理，不发送至翻译服务；首次使用需要下载语言模型，本站不保存翻译正文。' : `文本将发送至${provider === 'azure' ? '微软 Azure Translator' : provider === 'google_cloud' ? 'Google Cloud' : 'Google 翻译'}服务处理，本站不保存翻译正文。`}
       </p>
     </div>
   );

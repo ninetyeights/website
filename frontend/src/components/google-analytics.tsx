@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { analyticsWindow } from '@/lib/analytics';
+import { analyticsWindow, installGoogleTag } from '@/lib/analytics';
 
 export function GoogleAnalytics() {
   useEffect(() => {
@@ -11,11 +11,10 @@ export function GoogleAnalytics() {
       if (controller.signal.aborted || !config || !/^G-[A-Z0-9]+$/.test(config.measurementId) || !config.domains.includes(location.hostname.toLowerCase())) return;
       const target = analyticsWindow();
       if (target.gtag) return;
-      target.dataLayer = target.dataLayer ?? [];
-      target.gtag = (...args: unknown[]) => { target.dataLayer!.push(args); };
-      target.gtag('js', new Date());
+      const gtag = installGoogleTag(target);
+      gtag('js', new Date());
       // GA4 enhanced measurement handles client-side history changes.
-      target.gtag('config', config.measurementId, { allow_google_signals: false, allow_ad_personalization_signals: false });
+      gtag('config', config.measurementId, { allow_google_signals: false, allow_ad_personalization_signals: false });
       const script = document.createElement('script');
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${config.measurementId}`;

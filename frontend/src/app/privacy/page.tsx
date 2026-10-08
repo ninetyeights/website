@@ -15,6 +15,7 @@ const sections = [
   ], link: { href: 'https://support.google.com/analytics/answer/6004245?hl=zh-Hans', label: 'Google Analytics 数据说明' } },
   { title: '文本翻译', paragraphs: [
     '翻译原文会发送至你选择的服务。Google 翻译由浏览器直接请求 Google；Google Cloud 和微软 Azure Translator 通过本站后端转发至对应服务。长文本会分段发送，译文返回浏览器显示。',
+    '选择浏览器本地翻译时，原文和译文在本机处理，不发送至本站或云端翻译服务。首次使用可能需要由浏览器下载语言模型；不支持或失败时不会自动切换至云端服务。',
     '本站不保存翻译原文或译文，后端记录请求状态、耗时等运行信息，并根据访问 IP 控制并发请求。第三方服务按各自的数据政策处理请求，请勿提交密码、密钥或不希望交给第三方的敏感内容。',
   ] },
   { title: '反馈表单', paragraphs: [

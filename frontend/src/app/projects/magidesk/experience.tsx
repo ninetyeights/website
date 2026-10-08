@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { Move, Magnet, PanelsTopLeft, Grid2X2, CircleUserRound, AppWindow, FolderOpen, RotateCcw, ArrowUpRight, Pin, MousePointer2 } from 'lucide-react';
+import { Move, Magnet, PanelsTopLeft, Grid2X2, CircleUserRound, AppWindow, FolderOpen, RotateCcw, ArrowUpRight, Pin, MousePointer2, Globe, FileText, Music2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { features, defaultOptions, zoneEditorActions, type ZoneEditAction, type DemoOptions, type FeatureId, type Feature } from './content';
 import { useDemoPlayback, useReducedMotion } from './use-demo-playback';
@@ -11,14 +11,30 @@ import { GridDemo } from './demos/grid';
 import { BadgesDemo } from './demos/badges';
 import { DockDemo } from './demos/dock';
 import { BoxesDemo } from './demos/boxes';
+import { Cursor, Window, type DemoProps } from './demos/primitives';
 import s from './magidesk.module.css';
 const icons = {drag:Move,snap:Magnet,zones:PanelsTopLeft,grid:Grid2X2,badges:CircleUserRound,dock:AppWindow,boxes:FolderOpen};
 const demos = {drag:DragDemo,snap:SnapDemo,zones:ZonesDemo,grid:GridDemo,badges:BadgesDemo,dock:DockDemo,boxes:BoxesDemo};
 
+function HeroWorkspace({phase,options}: DemoProps) {
+  const moved=phase>=2;
+  return <>
+    <Window rect={{x:5,y:7,w:42,h:40}} title="文件资源管理器" kind="files" muted/>
+    <Window rect={{x:moved?35:10,y:moved?14:22,w:56,h:56}} title="工作 · 浏览器" kind="browser">
+      <div className={s.heroBrowserBadge} data-hero-browser-badge><span>林</span><small>工作</small></div>
+      <div className={s.documentLabel}>我的工作空间</div><div className={s.skeleton}/><div className={s.skeletonShort}/><div className={s.documentTiles}><span/><span/><span/></div>
+    </Window>
+    <div className={s.heroDock} data-hero-dock aria-hidden="true">
+      <span data-active="true"><Globe/></span><span><FolderOpen/></span><span><FileText/></span><i/><span><Music2/></span><span><Grid2X2/></span>
+    </div>
+    <Cursor x={moved?59:34} y={moved?44:52} pressed={phase===1||phase===2} label={`${options.modifier} + 左键`}/>
+  </>;
+}
+
 function Player({feature,variant,options,hero=false,onOption}: {feature:Feature;variant:string;options:DemoOptions;hero?:boolean;onOption?:(patch:Partial<DemoOptions>)=>void}) {
   const {ref,phase,reduced,running}=useDemoPlayback(hero?1:2);
   const capability=(feature.id==='zones' && variant==='edit' ? zoneEditorActions.find(item=>item.id===options.zoneEdit) : feature.capabilities.find(item=>item.id===variant))!;
-  const Demo=demos[feature.id];
+  const Demo=hero?HeroWorkspace:demos[feature.id];
   const keys=feature.id==='drag'?[options.modifier,variant==='resize'?'右键拖动':'左键拖动']:feature.id==='badges'&&variant==='copy'&&phase!==2?['鼠标穿透']:capability.keys;
   return <div ref={ref} className={s.player} data-phase={phase} data-running={running} data-reduced={reduced} data-demo={`${feature.id}:${variant}`}>
     <div className={s.desktopHeader}><span><i/> MAGIDESK WORKSPACE</span><span>功能演示 · 非软件截图</span></div>
