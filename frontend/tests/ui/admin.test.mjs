@@ -21,7 +21,8 @@ test('admin login loads local assets and submits through Livewire', { timeout: 6
   assert.equal(response.status(), 200);
   assert.equal(new URL(page.url()).pathname, '/admin/login');
   assert.match(response.headers()['x-robots-tag'], /noindex/);
-  assert.match(response.headers()['content-security-policy-report-only'], /script-src 'self';/);
+  assert.equal(response.headers()['content-security-policy-report-only'], undefined);
+  assert.match(response.headers()['content-security-policy'], /script-src 'self' 'unsafe-inline' 'unsafe-eval'/);
   await page.locator('input[type="email"]').fill('unknown-admin@example.invalid');
   await page.locator('input[type="password"]').fill('InvalidPassword123456');
   const update = page.waitForResponse(response => /livewire.*\/update/.test(response.url()));
@@ -30,7 +31,7 @@ test('admin login loads local assets and submits through Livewire', { timeout: 6
   await page.getByText('登录信息有误。', { exact: true }).waitFor();
   assert.deepEqual(failures, []);
   assert.deepEqual(await page.evaluate(() => window.policyViolations.filter(event => event.disposition === 'enforce')), []);
-  assert(await page.evaluate(() => window.policyViolations.some(event => event.disposition === 'report')));
+  assert.deepEqual(await page.evaluate(() => window.policyViolations), []);
   const publicPage = await page.request.get(base);
   assert(!publicPage.headers()['content-security-policy'].includes('unsafe-eval'));
 });

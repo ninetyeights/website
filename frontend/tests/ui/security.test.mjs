@@ -19,13 +19,11 @@ test('security headers cover pages, errors and API; CSP preserves hydration and 
     assert.equal(headers['referrer-policy'], 'strict-origin-when-cross-origin');
     assert.match(headers['permissions-policy'], /microphone=\(\)/);
     assert.match(headers['content-security-policy'], /frame-ancestors 'none'/);
-    assert.match(headers['content-security-policy-report-only'], /report-uri \/api\/security\/csp-report/);
-    assert(!headers['content-security-policy-report-only'].includes('unsafe-eval'));
-    assert(!headers['content-security-policy-report-only'].split('script-src ')[1].split(';')[0].includes('unsafe-inline'));
+    assert.equal(headers['content-security-policy-report-only'], undefined);
     assert.equal(headers['x-powered-by'], undefined);
     await page.waitForTimeout(400);
     assert.deepEqual(await page.evaluate(() => window.policyViolations.filter(event => event.disposition === 'enforce')), []);
-    assert(await page.evaluate(() => window.policyViolations.some(event => event.disposition === 'report' && event.directive.startsWith('script-src'))));
+    assert.deepEqual(await page.evaluate(() => window.policyViolations.filter(event => event.disposition === 'report')), []);
     if (path === '/feedback') assert(await page.frameLocator('iframe').getByText('Google Forms embed test').isVisible());
   }
   const response = await page.request.post(base + '/api/tools/translate', {data:{text:'',provider:'azure'}});
